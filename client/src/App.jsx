@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from 'react-router-dom'
 import { AuthProvider } from '@/context/AuthContext'
 import ProtectedRoute from '@/components/auth/ProtectedRoute'
 import Login from './pages/auth/Login'
@@ -16,36 +16,54 @@ function App() {
           {/* Public Routes */}
           <Route path="/login" element={<Login />} />
           
-          {/* Protected Routes */}
-          <Route element={
-            <ProtectedRoute>
-              <RootLayout />
-            </ProtectedRoute>
-          }>
+          {/* Protected Routes with RootLayout */}
+          <Route 
+            element={
+              <ProtectedRoute>
+                <RootLayout>
+                  <Outlet />
+                </RootLayout>
+              </ProtectedRoute>
+            }
+          >
+            {/* Dashboard Routes */}
             <Route path="/dashboard">
-              <Route path="student" element={
-                <ProtectedRoute allowedRoles={['student']}>
-                  <StudentDashboard />
-                </ProtectedRoute>
-              } />
-              <Route path="mentor" element={
-                <ProtectedRoute allowedRoles={['mentor']}>
-                  <MentorDashboard />
-                </ProtectedRoute>
-              } />
-              <Route path="events" element={
-                <ProtectedRoute allowedRoles={['events']}>
-                  <EventsDashboard />
-                </ProtectedRoute>
-              } />
-              <Route path="faculty" element={
-                <ProtectedRoute allowedRoles={['faculty']}>
-                  <FacultyDashboard />
-                </ProtectedRoute>
-              } />
+              <Route 
+                path="student" 
+                element={
+                  <ProtectedRoute allowedRoles={['student']}>
+                    <StudentDashboard />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="mentor" 
+                element={
+                  <ProtectedRoute allowedRoles={['mentor']}>
+                    <MentorDashboard />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="events" 
+                element={
+                  <ProtectedRoute allowedRoles={['events']}>
+                    <EventsDashboard />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="faculty" 
+                element={
+                  <ProtectedRoute allowedRoles={['faculty']}>
+                    <FacultyDashboard />
+                  </ProtectedRoute>
+                } 
+              />
             </Route>
           </Route>
 
+          {/* Default redirect */}
           <Route path="/" element={<Navigate to="/login" replace />} />
         </Routes>
       </Router>

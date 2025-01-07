@@ -4,6 +4,19 @@ import { useAuth } from "@/context/AuthContext";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Toast } from "@/components/ui/toast";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 function Login() {
   const navigate = useNavigate();
@@ -11,6 +24,7 @@ function Login() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [showToast, setShowToast] = useState(false);
+  const [showRoleDialog, setShowRoleDialog] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -34,17 +48,45 @@ function Login() {
     }
   };
 
-  const handleGoogleSignIn = async () => {
+  // const handleGoogleSignIn = async () => {
+  //   setLoading(true);
+  //   try {
+  //     // TODO: Implement actual Google Sign-in
+  //     const user = await login({ provider: "google" });
+  //     navigate(`/dashboard/${user.role}`);
+  //   } catch (err) {
+  //     setError("Failed to sign in with Google");
+  //     setShowToast(true);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  const handleGoogleSignIn = () => {
+    // Show role selection dialog instead of actual Google sign-in
+    setShowRoleDialog(true)
+  }
+
+  const handleRoleSelect = (role) => {
+    console.log("Role selected:", role); // Debug log
     setLoading(true);
     try {
-      // TODO: Implement actual Google Sign-in
-      const user = await login({ provider: "google" });
-      navigate(`/dashboard/${user.role}`);
+      login({ role });
+      const routes = {
+        student: '/dashboard/student',
+        mentor: '/dashboard/mentor',
+        events: '/dashboard/events',
+        faculty: '/dashboard/faculty'
+      };
+      console.log("Navigating to:", routes[role]); // Debug log
+      navigate(routes[role]);
     } catch (err) {
-      setError("Failed to sign in with Google");
+      console.error("Error:", err); // Debug log
+      setError("Failed to set role");
       setShowToast(true);
     } finally {
       setLoading(false);
+      setShowRoleDialog(false);
     }
   };
 
@@ -155,6 +197,28 @@ function Login() {
           />
         )}
       </div>
+
+      {/* Add only the role selection dialog */}
+      <Dialog open={showRoleDialog} onOpenChange={setShowRoleDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Select Your Role</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <Select onValueChange={handleRoleSelect}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select your role" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="student">Student</SelectItem>
+                <SelectItem value="mentor">Mentor</SelectItem>
+                <SelectItem value="events">Events Coordinator</SelectItem>
+                <SelectItem value="faculty">Faculty</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
